@@ -10,6 +10,7 @@
             <RouterLink :to="profileLink">个人资料</RouterLink>
           </nav>
           <div class="header-actions">
+            <NotificationCenter v-if="isLoggedIn" />
             <el-button v-if="isLoggedIn" text @click="logout">退出</el-button>
             <el-button v-else type="primary" @click="$router.push('/login')">登录</el-button>
           </div>
@@ -26,6 +27,7 @@
 import { computed } from 'vue';
 import { RouterLink, RouterView, useRouter } from 'vue-router';
 import { useAuth } from './hooks/useAuth';
+import NotificationCenter from './components/common/NotificationCenter.vue';
 
 const router = useRouter();
 const auth = useAuth();

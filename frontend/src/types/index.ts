@@ -1,6 +1,8 @@
 import {
   BidStatus,
   ContractStatus,
+  NotificationType,
+  NotificationRelatedType,
   PaymentMode,
   RequirementStatus,
   UserRole
@@ -85,4 +87,21 @@ export interface RegisterPayload extends LoginPayload {
 export interface AuthResponse {
   token: string;
   user: User;
+}
+
+export interface Notification {
+  id: string;
+  userId: string;
+  type: NotificationType;
+  title: string;
+  content: string;
+  relatedType: NotificationRelatedType;
+  relatedId: string;
+  isRead: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UnreadCount {
+  count: number;
 }

@@ -6,6 +6,7 @@ import { typeOrmConfig } from './config/typeorm.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { BidModule } from './modules/bid/bid.module';
 import { ContractModule } from './modules/contract/contract.module';
+import { NotificationModule } from './modules/notification/notification.module';
 import { RequirementModule } from './modules/requirement/requirement.module';
 import { UserModule } from './modules/user/user.module';
 import { AuthMiddleware } from './common/middlewares/auth.middleware';
@@ -21,7 +22,8 @@ import { RequestLoggerMiddleware } from './common/middlewares/request-logger.mid
     UserModule,
     RequirementModule,
     BidModule,
-    ContractModule
+    ContractModule,
+    NotificationModule
   ],
   controllers: [AppController]
 })

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ContractStatus } from '../../common/enums/contract-status.enum';
 import { RequirementStatus } from '../../common/enums/requirement-status.enum';
+import { NotificationService } from '../notification/notification.service';
 import { Requirement } from '../requirement/entity/requirement.entity';
 import { Contract } from './entity/contract.entity';
 import { CreateContractDto } from './dto/create-contract.dto';
@@ -13,7 +14,8 @@ export class ContractService {
     @InjectRepository(Contract)
     private readonly contractRepository: Repository<Contract>,
     @InjectRepository(Requirement)
-    private readonly requirementRepository: Repository<Requirement>
+    private readonly requirementRepository: Repository<Requirement>,
+    private readonly notificationService: NotificationService
   ) {}
 
   async findAll() {
@@ -58,7 +60,16 @@ export class ContractService {
       status: RequirementStatus.InProgress,
       winnerId: contract.freelancerId
     });
-    return this.contractRepository.save(contract);
+    const saved = await this.contractRepository.save(contract);
+
+    await this.notificationService.createContractSignedNotification(
+      contract.id,
+      contract.buyerId,
+      contract.freelancerId,
+      contract.contractNo
+    );
+
+    return saved;
   }
 
   async complete(id: string) {
@@ -68,12 +79,30 @@ export class ContractService {
     await this.requirementRepository.update(contract.requirementId, {
       status: RequirementStatus.Completed
     });
-    return this.contractRepository.save(contract);
+    const saved = await this.contractRepository.save(contract);
+
+    await this.notificationService.createContractCompletedNotification(
+      contract.id,
+      contract.buyerId,
+      contract.freelancerId,
+      contract.contractNo
+    );
+
+    return saved;
   }
 
   async terminate(id: string) {
     const contract = await this.findOne(id);
     contract.status = ContractStatus.Terminated;
-    return this.contractRepository.save(contract);
+    const saved = await this.contractRepository.save(contract);
+
+    await this.notificationService.createContractTerminatedNotification(
+      contract.id,
+      contract.buyerId,
+      contract.freelancerId,
+      contract.contractNo
+    );
+
+    return saved;
   }
 }

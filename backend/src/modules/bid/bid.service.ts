@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BidStatus } from '../../common/enums/bid-status.enum';
 import { RequirementStatus } from '../../common/enums/requirement-status.enum';
+import { NotificationService } from '../notification/notification.service';
 import { Requirement } from '../requirement/entity/requirement.entity';
 import { Bid } from './entity/bid.entity';
 import { CreateBidDto } from './dto/create-bid.dto';
@@ -12,7 +13,8 @@ export class BidService {
   constructor(
     @InjectRepository(Bid) private readonly bidRepository: Repository<Bid>,
     @InjectRepository(Requirement)
-    private readonly requirementRepository: Repository<Requirement>
+    private readonly requirementRepository: Repository<Requirement>,
+    private readonly notificationService: NotificationService
   ) {}
 
   async findAll() {
@@ -66,6 +68,13 @@ export class BidService {
       status: RequirementStatus.InProgress,
       winnerId: bid.bidderId
     });
+
+    await this.notificationService.createBidAcceptedNotification(
+      bid.bidderId,
+      bid.requirementId,
+      bid.requirement.title
+    );
+
     return this.findOne(id);
   }
 
